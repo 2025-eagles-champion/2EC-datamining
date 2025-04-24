@@ -6,7 +6,7 @@ data/*
 exports/*
 # C extensions
 *.so
-
+key/*
 # Distribution / packaging
 .Python
 build/
