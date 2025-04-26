@@ -5,11 +5,24 @@ from tkinter import filedialog
 def convert_nodes(csv_path, js_path):
     df = pd.read_csv(csv_path)
 
+    necessary_columns = [
+        "address", "sent_tx_count", "sent_tx_amount",
+        "recv_tx_count", "recv_tx_amount",
+        "external_sent_tx_count", "external_sent_tx_amount",
+        "external_recv_tx_count", "external_recv_tx_amount",
+        "hour_entropy", "first_date", "last_date", "active_days_count",
+        "counterparty_count_sent", "counterparty_count_recv",
+        "sent_tx_amount_mean", "recv_tx_amount_mean",
+        "external_sent_tx_amount_mean", "external_recv_tx_amount_mean"
+    ]
+
+    df = df[necessary_columns]
+    
     with open(js_path, 'w', encoding='utf-8') as f:
         f.write('export const dummyNodes = [\n')
         for _, row in df.iterrows():
             f.write('  {\n')
-            for col in df.columns:
+            for col in necessary_columns:
                 value = row[col]
                 if isinstance(value, str):
                     f.write(f'    {col}: "{value}",\n')
@@ -21,11 +34,21 @@ def convert_nodes(csv_path, js_path):
 def convert_transactions(csv_path, js_path):
     df = pd.read_csv(csv_path)
 
+    necessary_columns = [
+        "type", "txhash", "timestamp", "amount",
+        "denom", "dpDenom",
+        "fromAddress", "toAddress",
+        "fromChain", "fromChainId",
+        "toChain", "toChainId"
+    ]
+
+    df = df[necessary_columns]
+
     with open(js_path, 'w', encoding='utf-8') as f:
         f.write('export const dummyTransactions = [\n')
         for _, row in df.iterrows():
             f.write('  {\n')
-            for col in df.columns:
+            for col in necessary_columns:
                 value = row[col]
                 if isinstance(value, str):
                     f.write(f'    {col}: "{value}",\n')
@@ -61,7 +84,7 @@ def main():
     root = tk.Tk()
     root.title("CSV to JS 변환기")
 
-    tk.Label(root, text="어떤 타입을 변환하시겠습니까?").pack(pady=10)
+    tk.Label(root, text="변환할 타입을 선택하세요").pack(pady=10)
 
     tk.Button(root, text="노드 정보 변환(dummyNodes.js)", command=lambda: select_and_convert('nodes')).pack(pady=5)
     tk.Button(root, text="트랜잭션 정보 변환(dummyTransactions.js)", command=lambda: select_and_convert('transactions')).pack(pady=5)
